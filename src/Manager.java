@@ -22,7 +22,7 @@ public class Manager {   // Класс, в котором происходит �
                 for (int i = 0; i < epic.listOfSubtasks.size(); i++) {
                     Subtask subtask = epic.listOfSubtasks.get(i);
                     System.out.println(String.format("Подзадача №%d: " + subtask.name + ", описание: "
-                        + subtask.description + ", идентификационный номер подзадачи " + subtask.getId(), i+1));
+                    + subtask.description + ", идентификационный номер подзадачи " + subtask.getId(), i+1));
                     System.out.println("Статус " + subtask.getStatus());
                 }
                 System.out.println("");
