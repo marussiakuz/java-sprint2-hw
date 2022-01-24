@@ -25,6 +25,5 @@ public class Task {        // родительский класс Задача
     public void setStatus(String status) {      // установить статус
         this.status = status;
     }
-
 }
 

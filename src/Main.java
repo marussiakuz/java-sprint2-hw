@@ -2,14 +2,14 @@ public class Main {     // тестирование Менеджера зада�
     public static void main(String[] args) {
         Epic epic1 = new Epic("Проект второго спринта", "Менеджер задач", "NEW");
         Subtask subtask1 = new Subtask("Реализация", "создать проект Менеджер задач согласно ТЗ",
-                "NEW", epic1);
+            "NEW", epic1);
         Subtask subtask2 = new Subtask("Тестирование", "пройти тестирование", "NEW", epic1);
         epic1.listOfSubtasks.add(subtask1);
         epic1.listOfSubtasks.add(subtask2);
 
         Epic epic2 = new Epic("Сдача проекта второго спринта", "Менеджер задач", "NEW");
         Subtask subtask = new Subtask("Внесение исправлений", "Внести все исправления согласно ревью",
-                "NEW", epic2);
+            "NEW", epic2);
         epic2.listOfSubtasks.add(subtask);
 
         Task task = new Task("файл README", "указать описание в файле README", "NEW");
@@ -54,7 +54,6 @@ public class Main {     // тестирование Менеджера зада�
 
         manager.deleteAllTasks();  // удалили все задачи
         manager.printAllTasks();   // распечатали список задач
-
     }
 }
 
