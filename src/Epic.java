@@ -25,18 +25,18 @@ public class Epic extends Task {    // наследственный класс �
                 + getStatus() + ", id=" + getId() + '}';
     }
 
-    public String updateStatus() {    // вспомогательный метод для контроля над текущим статусом эпика
+    public StatusOfTask updateStatus() {    // вспомогательный метод для контроля над текущим статусом эпика
         int countStatusDone = 0;
         for(int i = 0; i < listOfSubtasks.size(); i++) {
             Subtask subtask = listOfSubtasks.get(i);
-            if (subtask.getStatus().equals("IN_PROGRESS")) {
-                return "IN_PROGRESS";
-            } else if (subtask.getStatus().equals("DONE")) {
+            if (subtask.getStatus().toString().equals("IN_PROGRESS")) {
+                return StatusOfTask.IN_PROGRESS;
+            } else if (subtask.getStatus().toString().equals("DONE")) {
                 ++countStatusDone;
             }
         }
-        if (countStatusDone == listOfSubtasks.size() && listOfSubtasks.size()!=0) return "DONE";
-        else return "NEW";
+        if (countStatusDone == listOfSubtasks.size() && listOfSubtasks.size()!=0) return StatusOfTask.DONE;
+        else return StatusOfTask.NEW;
     }
 }
 

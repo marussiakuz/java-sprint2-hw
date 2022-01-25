@@ -1,3 +1,5 @@
+import java.time.Month;
+
 public class Main {    // тестирование Менеджера задач
     public static void main(String[] args) {
         Epic epic1 = new Epic("Проект второго спринта", "Менеджер задач");
@@ -24,14 +26,14 @@ public class Main {    // тестирование Менеджера задач
         manager.printAllTasks();    // распечатали список задач
         System.out.println("____________________________________________________________________");
 
-        subtask1.setStatus(Task.statusIsInProgress);  // поменяли статус подзадачи эпика epic1
+        subtask1.setStatus(StatusOfTask.IN_PROGRESS);  // поменяли статус подзадачи эпика epic1
         manager.updateTask(subtask1);    // обновили подзадачу в Менеджере
         manager.printAllTasks();    // снова распечатали все задачи
         System.out.println("____________________________________________________________________");
 
-        subtask1.setStatus(Task.statusIsDONE);
-        subtask2.setStatus(Task.statusIsDONE);    // поменяли статус обоих подзадач эпика epic1
-        subtask.setStatus(Task.statusIsInProgress);    // поменяли статус подзадачи эпика epic2
+        subtask1.setStatus(StatusOfTask.DONE);
+        subtask2.setStatus(StatusOfTask.DONE);    // поменяли статус обоих подзадач эпика epic1
+        subtask.setStatus(StatusOfTask.IN_PROGRESS);    // поменяли статус подзадачи эпика epic2
         manager.updateTask(subtask1);
         manager.updateTask(subtask2);
         manager.updateTask(subtask);    // обновили измененные подзадачи в Менеджере
