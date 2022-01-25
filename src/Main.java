@@ -1,18 +1,18 @@
-public class Main {     // тестирование Менеджера задач
+public class Main {    // тестирование Менеджера задач
     public static void main(String[] args) {
-        Epic epic1 = new Epic("Проект второго спринта", "Менеджер задач", "NEW");
+        Epic epic1 = new Epic("Проект второго спринта", "Менеджер задач");
         Subtask subtask1 = new Subtask("Реализация", "создать проект Менеджер задач согласно ТЗ",
-            "NEW", epic1);
-        Subtask subtask2 = new Subtask("Тестирование", "пройти тестирование", "NEW", epic1);
-        epic1.listOfSubtasks.add(subtask1);
-        epic1.listOfSubtasks.add(subtask2);
+            epic1);
+        Subtask subtask2 = new Subtask("Тестирование", "пройти тестирование", epic1);
+        epic1.addSubtask(subtask1);
+        epic1.addSubtask(subtask2);
 
-        Epic epic2 = new Epic("Сдача проекта второго спринта", "Менеджер задач", "NEW");
+        Epic epic2 = new Epic("Сдача проекта второго спринта", "Менеджер задач");
         Subtask subtask = new Subtask("Внесение исправлений", "Внести все исправления согласно ревью",
-            "NEW", epic2);
-        epic2.listOfSubtasks.add(subtask);
+            epic2);
+        epic2.addSubtask(subtask);
 
-        Task task = new Task("файл README", "указать описание в файле README", "NEW");
+        Task task = new Task("файл README", "указать описание в файле README");
 
         Manager manager = new Manager();
         manager.addTask(epic1);
@@ -21,39 +21,36 @@ public class Main {     // тестирование Менеджера зада�
         manager.addTask(epic2);
         manager.addTask(subtask);
         manager.addTask(task);    // добавили все задачи
-        manager.printAllTasks();  // распечатали список задач
+        manager.printAllTasks();    // распечатали список задач
         System.out.println("____________________________________________________________________");
-        System.out.println("");
 
-        subtask1.setStatus("IN_PROGRESS");  // поменяли статус подзадачи эпика epic1
-        manager.updateTask(subtask1, 2);   // обновили подзадачу в Менеджере
-        manager.printAllTasks();   // снова распечатали все задачи
+        subtask1.setStatus(Task.statusIsInProgress);  // поменяли статус подзадачи эпика epic1
+        manager.updateTask(subtask1);    // обновили подзадачу в Менеджере
+        manager.printAllTasks();    // снова распечатали все задачи
         System.out.println("____________________________________________________________________");
-        System.out.println("");
 
-        subtask1.setStatus("DONE");
-        subtask2.setStatus("DONE");   // поменяли статус обоих подзадач эпика epic1
-        manager.updateTask(subtask1, 2);
-        manager.updateTask(subtask2, 3);  // обновили обе подзадачи в Менеджере
-        manager.printAllTasks();   // снова распечатали все задачи
+        subtask1.setStatus(Task.statusIsDONE);
+        subtask2.setStatus(Task.statusIsDONE);    // поменяли статус обоих подзадач эпика epic1
+        subtask.setStatus(Task.statusIsInProgress);    // поменяли статус подзадачи эпика epic2
+        manager.updateTask(subtask1);
+        manager.updateTask(subtask2);
+        manager.updateTask(subtask);    // обновили измененные подзадачи в Менеджере
+        manager.printAllTasks();    // снова распечатали все задачи
         System.out.println("____________________________________________________________________");
-        System.out.println("");
+
+        manager.deleteOneTask(5);    // удалили единственную подзадачу эпика epic2 со статусом "IN_PROGRESS"
+        manager.printAllTasks();    // распечатали все задачи
+        System.out.println("____________________________________________________________________");
 
         manager.getTask(6);    // получили информацию по id задачи
         System.out.println("____________________________________________________________________");
-        System.out.println("");
 
-        manager.getListOfSubtasks(epic1); // получили список подзадач эпика
+        manager.getListOfSubtasks(epic1);    // получили список подзадач эпика
         System.out.println("____________________________________________________________________");
-        System.out.println("");
 
-        manager.deleteOneTask(5); // удалили одну подзадачу по её id
-        manager.printAllTasks();
+        manager.deleteAllTasks();    // удалили все задачи
+        manager.printAllTasks();    // распечатали список задач
         System.out.println("____________________________________________________________________");
-        System.out.println("");
-
-        manager.deleteAllTasks();  // удалили все задачи
-        manager.printAllTasks();   // распечатали список задач
     }
 }
 

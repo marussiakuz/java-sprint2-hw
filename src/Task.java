@@ -1,29 +1,44 @@
-public class Task {        // родительский класс Задача
-    protected final String name;
-    protected final String description;
+public class Task {    // родительский класс Задача
+    private final String name;
+    private final String description;
     private String status;
-    protected static int count = 0;
-    private int id;
+    private static int count = 0;
+    private final int id;
+    public static final String statusIsNew = "NEW";
+    public static final String statusIsInProgress = "IN_PROGRESS";
+    public static final String statusIsDONE = "DONE";
 
-    public Task(String name, String description, String status) {    // конструктор экземпляра класса Задача
+    public Task(String name, String description) {    // конструктор экземпляра класса Задача
         this.name = name;
         this.description = description;
-        if (status.equals("NEW") || status.equals("IN_PROGRESS") || status.equals("DONE")) {
-            this.status = status;
-        }
+        this.status = statusIsNew;
         id = ++count;
     }
 
-    public int getId() {     // получить id номер задачи
+    public int getId() {    // получить id номер задачи
         return id;
     }
 
-    public String getStatus() {  // получить строковое обозначение статуса задачи
+    public String getStatus() {    // получить строковое обозначение статуса задачи
         return status;
     }
 
-    public void setStatus(String status) {      // установить статус
+    public void setStatus(String status) {    // установить статус
         this.status = status;
+    }
+
+    public String getName() {    // получить имя задачи
+        return name;
+    }
+
+    public String getDescription() {    // получить описание задачи
+        return description;
+    }
+
+    @Override
+    public String toString() {    // переопределили метод для строкового представления информации о задаче
+        return "Task{" + "name='" + name + '\'' + ", description='" + description + '\'' + ", status="
+            + status + ", id=" + id + '}';
     }
 }
 
