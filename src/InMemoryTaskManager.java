@@ -1,53 +1,56 @@
-import java.util.HashMap;
+import java.util.*;
 import java.util.Map.Entry;
 
-public class Manager {    // Класс, в котором происходит управление состоянием задач
+public class InMemoryTaskManager implements TaskManager {    // Менеджер задач в оперативной памяти
     private HashMap<Integer, Task> listOfAllTasks = new HashMap<>();
+    private InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
 
+    public List<Task> history() {    // получить список просмотренных задач
+        return inMemoryHistoryManager.getHistory();
+    }
+
+    @Override
     public void printAllTasks() {    // вывести на экран строковое представление всех задач
         for (Entry entry : listOfAllTasks.entrySet()) {
-            Object object = entry.getValue();
-            getClassAndPrint(object);
+            Task task = (Task) entry.getValue();
+            getClassAndPrint(task);
         }
     }
 
-    public void deleteAllTasks() {   //удалить все задачи
+    @Override
+    public void deleteAllTasks() {    // удалить все задачи
         listOfAllTasks.clear();
+        inMemoryHistoryManager.clear();
     }
 
+    @Override
     public void getTask(int id) {    // получить информацию о задаче по её id
-        Object object = listOfAllTasks.get(id);
-        getClassAndPrint(object);
+        Task task = listOfAllTasks.get(id);
+        getClassAndPrint(task);
+        inMemoryHistoryManager.add(task);
     }
 
-    public void getClassAndPrint(Object object) {    // определить класс объекта и вывести строковое представление
-        if (isEpic(object)) {
-            Epic epic = (Epic) object;
-            System.out.println(epic);
-        } else if (isSubtask(object)) {
-            Subtask subtask = (Subtask) object;
-            System.out.println(subtask);
-        } else {
-            Task task = (Task) object;
-            System.out.println(task);
-        }
-    }
-
+    @Override
     public void addTask(Task task) {    // добавить в список задачу
         listOfAllTasks.put(task.getId(), task);
         if (isSubtask(task)) updateEpicStatus(((Subtask) task).getEpic());
     }
 
+    @Override
     public void updateTask(Task taskNewVersion) {    // обновить задачу
         listOfAllTasks.put(taskNewVersion.getId(), taskNewVersion);
         if (isSubtask(taskNewVersion))  updateEpicStatus(((Subtask) taskNewVersion).getEpic());
     }
 
+    @Override
     public void deleteOneTask(int id) {    // удалить одну задачу
-        Object task = listOfAllTasks.get(id);
+        Task task = listOfAllTasks.get(id);
         if (isEpic(task)) {
             for (Subtask subtask : ((Epic) task).getListOfSubtasks()) {
                 listOfAllTasks.remove(subtask.getId());
+                while (inMemoryHistoryManager.contains(subtask)) {
+                    inMemoryHistoryManager.remove(subtask);
+                }
             }
         } else if (isSubtask(task)) {
             Epic epic = ((Subtask) task).getEpic();
@@ -55,6 +58,22 @@ public class Manager {    // Класс, в котором происходит 
             updateEpicStatus(epic);
         }
         listOfAllTasks.remove(id);
+        while (inMemoryHistoryManager.contains(task)) {
+            inMemoryHistoryManager.remove(task);
+        }
+    }
+
+    public void getClassAndPrint(Task unknownTask) {    // определить класс объекта и вывести строковое представление
+        if (isEpic(unknownTask)) {
+            Epic epic = (Epic) unknownTask;
+            System.out.println(epic);
+        } else if (isSubtask(unknownTask)) {
+            Subtask subtask = (Subtask) unknownTask;
+            System.out.println(subtask);
+        } else {
+            Task task = (Task) unknownTask;
+            System.out.println(task);
+        }
     }
 
     public void getListOfSubtasks(Epic epic) {    // получить список подзадач определенного эпика
@@ -63,13 +82,13 @@ public class Manager {    // Класс, в котором происходит 
         }
     }
 
-    public boolean isSubtask(Object object) {    // проверка, является ли объект подзадачей
-        if (object.getClass() == Subtask.class) return true;
+    public boolean isSubtask(Task task) {    // проверка, является ли объект подзадачей
+        if (task.getClass() == Subtask.class) return true;
         else return false;
     }
 
-    public boolean isEpic(Object object) {    // проверка, является ли объект эпиком
-        if (object.getClass() == Epic.class) return true;
+    public boolean isEpic(Task task) {    // проверка, является ли объект эпиком
+        if (task.getClass() == Epic.class) return true;
         else return false;
     }
 

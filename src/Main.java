@@ -1,6 +1,5 @@
-import java.time.Month;
 
-public class Main {    // тестирование Менеджера задач
+public class Main {    // тестирование проекта на этапе 3-его спринта
     public static void main(String[] args) {
         Epic epic1 = new Epic("Проект второго спринта", "Менеджер задач");
         Subtask subtask1 = new Subtask("Реализация", "создать проект Менеджер задач согласно ТЗ",
@@ -16,42 +15,46 @@ public class Main {    // тестирование Менеджера задач
 
         Task task = new Task("файл README", "указать описание в файле README");
 
-        Manager manager = new Manager();
-        manager.addTask(epic1);
+        InMemoryTaskManager manager = new InMemoryTaskManager();
+        manager.addTask(epic1);    // добавляем задачи
         manager.addTask(subtask1);
         manager.addTask(subtask2);
         manager.addTask(epic2);
         manager.addTask(subtask);
-        manager.addTask(task);    // добавили все задачи
+        manager.addTask(task);
+        System.out.println("1. Распечатаем добавленный список задач:");
         manager.printAllTasks();    // распечатали список задач
         System.out.println("____________________________________________________________________");
 
-        subtask1.setStatus(StatusOfTask.IN_PROGRESS);  // поменяли статус подзадачи эпика epic1
-        manager.updateTask(subtask1);    // обновили подзадачу в Менеджере
-        manager.printAllTasks();    // снова распечатали все задачи
+        System.out.println("2. Список просмотра пока пуст: ");
+        System.out.println(manager.history());    // распечатали пустой список просмотренных задач
         System.out.println("____________________________________________________________________");
 
-        subtask1.setStatus(StatusOfTask.DONE);
-        subtask2.setStatus(StatusOfTask.DONE);    // поменяли статус обоих подзадач эпика epic1
-        subtask.setStatus(StatusOfTask.IN_PROGRESS);    // поменяли статус подзадачи эпика epic2
-        manager.updateTask(subtask1);
-        manager.updateTask(subtask2);
-        manager.updateTask(subtask);    // обновили измененные подзадачи в Менеджере
-        manager.printAllTasks();    // снова распечатали все задачи
+        System.out.println("3. В историю просмотра должны попасть следующие задачи: ");
+        manager.getTask(1);    // создаем историю просмотра получением задач по их id номеру
+        manager.getTask(5);
+        manager.getTask(4);
+        manager.getTask(6);
+        manager.getTask(2);
+        manager.getTask(3);
+        manager.getTask(4);
+        manager.getTask(4);
+        manager.getTask(6);
+        manager.getTask(5);
+        manager.getTask(4);
+        manager.getTask(3);
+        manager.getTask(2);
+        manager.getTask(1);
         System.out.println("____________________________________________________________________");
 
-        manager.deleteOneTask(5);    // удалили единственную подзадачу эпика epic2 со статусом "IN_PROGRESS"
-        manager.printAllTasks();    // распечатали все задачи
+        System.out.println("4. Распечатаем список 10 недавно просмотренных задач (свежепросмотренные " +
+                "идут впереди, чем более позднее просмотрена задача - тем ближе она к концу):");
+        System.out.println(manager.history());    // распечатаем полученный список
         System.out.println("____________________________________________________________________");
 
-        manager.getTask(6);    // получили информацию по id задачи
-        System.out.println("____________________________________________________________________");
-
-        manager.getListOfSubtasks(epic1);    // получили список подзадач эпика
-        System.out.println("____________________________________________________________________");
-
-        manager.deleteAllTasks();    // удалили все задачи
-        manager.printAllTasks();    // распечатали список задач
+        manager.deleteOneTask(4);    // удаляем эпик, автоматически удаляется и его подзадача с id 5
+        System.out.println("5. Распечатаем обновленный список просмотра с учетом удаленного эпика и его подзадачи:");
+        System.out.println(manager.history());
         System.out.println("____________________________________________________________________");
     }
 }

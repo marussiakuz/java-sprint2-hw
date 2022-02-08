@@ -21,8 +21,8 @@ public class Epic extends Task {    // наследственный класс �
 
     @Override
     public String toString() {    // переопределили метод для строкового представления информации об эпике
-        return "Epic{" + "name='" + getName() + '\'' + ", description='" + getDescription() + '\'' + ", status="
-                + getStatus() + ", id=" + getId() + '}';
+        return "Epic{" + "name='" + getName() + '\'' + ", description='" + getDescription() + '\''
+            + ", numberOfSubtasks=" + listOfSubtasks.size() + ", status=" + getStatus() + ", id=" + getId() + '}';
     }
 
     public StatusOfTask updateStatus() {    // вспомогательный метод для контроля над текущим статусом эпика
