@@ -4,7 +4,7 @@ public class Managers {    // утилитарный класс для созд�
         return new InMemoryTaskManager();
     }
 
-    public static InMemoryHistoryManager getDefaultHistory() {    // возвращает историю просмотра
+    public static HistoryManager getDefaultHistory() {    // возвращает историю просмотра
         return new InMemoryHistoryManager();
     }
 }
