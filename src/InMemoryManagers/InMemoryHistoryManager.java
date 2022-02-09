@@ -1,10 +1,12 @@
-import java.util.ArrayDeque;
+package InMemoryManagers;
+
+import Managers.HistoryManager;
+import Tasks.Task;
 import java.util.ArrayList;
 import java.util.List;
 
 public class InMemoryHistoryManager implements HistoryManager {    // Менеджер просмотренных задач
-
-    private ArrayDeque<Task> lastViewedTasks = new ArrayDeque<>();    // список просмотренных задач
+    private List<Task> lastViewedTasks = new ArrayList<>();    // список просмотренных задач
 
     public void remove(Task task) {    // удалить задачу из списка просмотренных
         lastViewedTasks.remove(task);
@@ -21,20 +23,14 @@ public class InMemoryHistoryManager implements HistoryManager {    // Менед
 
     @Override
     public void add(Task task) {    // добавить задачу в список просмотренных
-        lastViewedTasks.addFirst(task);
+        lastViewedTasks.add(task);
+        if (lastViewedTasks.size()>10) {
+            lastViewedTasks.remove(0);
+        }
     }
 
     @Override
     public List<Task> getHistory() {    // получить лимитированный список просмотренных задач (лимит - 10 задач)
-        List <Task> limitLastViewedTasks = new ArrayList<>();
-        if (lastViewedTasks.isEmpty()) return limitLastViewedTasks;
-        ArrayDeque<Task> copy = lastViewedTasks.clone();
-        int limit = 0;
-        for (Task task : lastViewedTasks) {
-            limitLastViewedTasks.add(copy.pop());
-            limit++;
-            if (limit == 10) break;
-        }
-        return limitLastViewedTasks;
+        return lastViewedTasks;
     }
 }

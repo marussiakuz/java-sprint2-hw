@@ -1,3 +1,5 @@
+package Tasks;
+
 public enum StatusOfTask {    // перечисление возможных статусов
     NEW("NEW"),
     IN_PROGRESS("IN_PROGRESS"),

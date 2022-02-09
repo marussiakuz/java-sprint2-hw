@@ -1,3 +1,5 @@
+package Tasks;
+
 public class Task {    // родительский класс Задача
     private final String name;
     private final String description;

@@ -1,5 +1,9 @@
+package InMemoryManagers;
+
+import Managers.TaskManager;
+import Tasks.*;
 import java.util.*;
-import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 public class InMemoryTaskManager implements TaskManager {    // Менеджер задач в оперативной памяти
     private HashMap<Integer, Task> listOfAllTasks = new HashMap<>();
@@ -10,11 +14,8 @@ public class InMemoryTaskManager implements TaskManager {    // Менеджер
     }
 
     @Override
-    public void printAllTasks() {    // вывести на экран строковое представление всех задач
-        for (Entry entry : listOfAllTasks.entrySet()) {
-            Task task = (Task) entry.getValue();
-            getClassAndPrint(task);
-        }
+    public ArrayList<Task> getAllTasks() {    // получить список всех задач
+        return (ArrayList<Task>) listOfAllTasks.values().stream().collect(Collectors.toList());
     }
 
     @Override
@@ -24,10 +25,10 @@ public class InMemoryTaskManager implements TaskManager {    // Менеджер
     }
 
     @Override
-    public void getTask(int id) {    // получить информацию о задаче по её id
+    public Task getTask(int id) {    // получить информацию о задаче по её id
         Task task = listOfAllTasks.get(id);
-        getClassAndPrint(task);
         inMemoryHistoryManager.add(task);
+        return task;
     }
 
     @Override
@@ -63,23 +64,8 @@ public class InMemoryTaskManager implements TaskManager {    // Менеджер
         }
     }
 
-    public void getClassAndPrint(Task unknownTask) {    // определить класс объекта и вывести строковое представление
-        if (isEpic(unknownTask)) {
-            Epic epic = (Epic) unknownTask;
-            System.out.println(epic);
-        } else if (isSubtask(unknownTask)) {
-            Subtask subtask = (Subtask) unknownTask;
-            System.out.println(subtask);
-        } else {
-            Task task = (Task) unknownTask;
-            System.out.println(task);
-        }
-    }
-
-    public void getListOfSubtasks(Epic epic) {    // получить список подзадач определенного эпика
-        for (Subtask subtask : epic.getListOfSubtasks()) {
-            System.out.println(subtask);
-        }
+    public ArrayList<Subtask> getListOfSubtasks(Epic epic) {    // получить список подзадач определенного эпика
+        return epic.getListOfSubtasks();
     }
 
     public boolean isSubtask(Task task) {    // проверка, является ли объект подзадачей
