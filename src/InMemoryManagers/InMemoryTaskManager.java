@@ -49,8 +49,8 @@ public class InMemoryTaskManager implements TaskManager {    // Менеджер
         if (isEpic(task)) {
             for (Subtask subtask : ((Epic) task).getListOfSubtasks()) {
                 listOfAllTasks.remove(subtask.getId());
-                while (inMemoryHistoryManager.contains(subtask)) {
-                    inMemoryHistoryManager.remove(subtask);
+                if (inMemoryHistoryManager.contains(subtask)) {
+                    inMemoryHistoryManager.remove(subtask.getId());
                 }
             }
         } else if (isSubtask(task)) {
@@ -59,8 +59,8 @@ public class InMemoryTaskManager implements TaskManager {    // Менеджер
             updateEpicStatus(epic);
         }
         listOfAllTasks.remove(id);
-        while (inMemoryHistoryManager.contains(task)) {
-            inMemoryHistoryManager.remove(task);
+        if (inMemoryHistoryManager.contains(task)) {
+            inMemoryHistoryManager.remove(task.getId());
         }
     }
 
