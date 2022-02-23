@@ -1,11 +1,13 @@
 package InMemoryManagers;
 
-public class Node<Task extends Tasks.Task> {    // узел связного списка
-    private Task task;
-    private Node<Task> next;
-    private Node<Task> prev;
+import Tasks.Task;
 
-    Node(Node<Task> prev, Task task, Node<Task> next) {    // конструктор узла
+public class Node<T> {    // узел связного списка
+    private Task task;
+    private Node<T> next;
+    private Node<T> prev;
+
+    Node(Node<T> prev, Task task, Node<T> next) {    // конструктор узла
         this.task = task;
         this.next = next;
         this.prev = prev;
@@ -15,19 +17,19 @@ public class Node<Task extends Tasks.Task> {    // узел связного с�
         return task;
     }
 
-    public Node<Task> getNext() {    // вернуть узел, следующий за текущим
+    public Node<T> getNext() {    // вернуть узел, следующий за текущим
         return next;
     }
 
-    public void setNext(Node<Task> next) {    // установить узел, следующий за текущим
+    public void setNext(Node<T> next) {    // установить узел, следующий за текущим
         this.next = next;
     }
 
-    public Node<Task> getPrev() {    // вернуть узел, предшествующий текущему
+    public Node<T> getPrev() {    // вернуть узел, предшествующий текущему
         return prev;
     }
 
-    public void setPrev(Node<Task> prev) {    // установить узел, предшествующий текущему
+    public void setPrev(Node<T> prev) {    // установить узел, предшествующий текущему
         this.prev = prev;
     }
 }
