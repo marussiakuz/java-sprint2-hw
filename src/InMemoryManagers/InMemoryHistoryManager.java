@@ -9,7 +9,7 @@ public class InMemoryHistoryManager implements HistoryManager {    // Менед
     private Node<Task> head;
     private Node<Task> tail;
 
-    void linkLast(Task task) {    // добавить задачу в конец связанного списка и во вспомогательную хэш-карту
+    private void linkLast(Task task) {    // добавить задачу в конец связанного списка и во вспомогательную хэш-карту
         final Node<Task> previous = tail;
         final Node<Task> newNode = new Node<>(previous, task, null);
         tail = newNode;
@@ -18,7 +18,7 @@ public class InMemoryHistoryManager implements HistoryManager {    // Менед
         viewedTasks.put(task.getId(), newNode);
     }
 
-    public List<Task> getTasks() {    // преобразовать связанный список в ArrayList и вернуть его
+    private List<Task> getTasks() {    // преобразовать связанный список в ArrayList и вернуть его
         List<Task> lastViewedTasks = new ArrayList<>();
         Node prevNode = tail;
         while (prevNode != null) {
@@ -28,7 +28,7 @@ public class InMemoryHistoryManager implements HistoryManager {    // Менед
         return lastViewedTasks;
     }
 
-    public void removeNode(Node<Task> node) {    // удалить узел из связанного списка
+    private void removeNode(Node<Task> node) {    // удалить узел из связанного списка
         final Node<Task> previous = node.getPrev();
         final Node<Task> next = node.getNext();
         if (node == head && node == tail) {
@@ -43,6 +43,11 @@ public class InMemoryHistoryManager implements HistoryManager {    // Менед
             previous.setNext(next);
             next.setPrev(previous);
         }
+    }
+
+    private void clearLinkedList() {    // очистить связанный список
+        head = null;
+        tail = null;
     }
 
     @Override
@@ -60,21 +65,12 @@ public class InMemoryHistoryManager implements HistoryManager {    // Менед
     }
 
     @Override
-    public List<Task> getHistory() {    // получить лимитированный список просмотренных задач (лимит - 10 задач)
-        ArrayList<Task> lastViewedTasks = new ArrayList<>();
-        if (getTasks().size() <= 10) {
-            lastViewedTasks.addAll(getTasks());
-        } else {
-            for (int i = 0; i < 10; i++) {
-                lastViewedTasks.add(getTasks().get(i));
-            }
-        }
-        return lastViewedTasks;
+    public List<Task> getHistory() {    // вернуть список просмотренных задач
+        return getTasks();
     }
 
     public void clear() {    // очистить список просмотренных задач
-        head = null;
-        tail = null;
+        clearLinkedList();
         viewedTasks.clear();
     }
 
