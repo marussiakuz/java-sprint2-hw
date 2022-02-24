@@ -45,7 +45,7 @@ public class InMemoryHistoryManager implements HistoryManager {    // Менед
         }
     }
 
-    private void clearLinkedList() {    // очистить связанный список
+    private void clearLinkedList() {    // удаляет все элементы из связанного списка
         head = null;
         tail = null;
     }
@@ -69,7 +69,7 @@ public class InMemoryHistoryManager implements HistoryManager {    // Менед
         return getTasks();
     }
 
-    public void clear() {    // очистить список просмотренных задач
+    public void clear() {    // очистить историю просмотренных задач
         clearLinkedList();
         viewedTasks.clear();
     }
