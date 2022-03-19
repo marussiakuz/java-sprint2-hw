@@ -2,7 +2,9 @@ package InMemoryManagers;
 
 import Tasks.Task;
 
-public class Node<T> {    // узел связного списка
+import java.io.Serializable;
+
+public class Node<T> implements Serializable {    // узел связного списка
     private Task task;
     private Node<T> next;
     private Node<T> prev;

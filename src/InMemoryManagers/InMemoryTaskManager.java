@@ -2,10 +2,12 @@ package InMemoryManagers;
 
 import Managers.TaskManager;
 import Tasks.*;
+
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class InMemoryTaskManager implements TaskManager {    // Менеджер задач в оперативной памяти
+public class InMemoryTaskManager implements TaskManager, Serializable {    // Менеджер задач в оперативной памяти
     private HashMap<Integer, Task> listOfAllTasks = new HashMap<>();
     private InMemoryHistoryManager inMemoryHistoryManager = new InMemoryHistoryManager();
 

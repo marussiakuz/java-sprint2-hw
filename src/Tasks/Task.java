@@ -1,6 +1,8 @@
 package Tasks;
 
-public class Task {    // родительский класс Задача
+import java.io.Serializable;
+
+public class Task implements Serializable {    // родительский класс Задача
     private final String name;
     private final String description;
     private static int count = 0;
@@ -13,6 +15,10 @@ public class Task {    // родительский класс Задача
         this.status = StatusOfTask.NEW;
         id = ++count;
     }
+
+    /*public Task () {
+        this.name = getName();
+    }*/
 
     public int getId() {    // получить id номер задачи
         return id;

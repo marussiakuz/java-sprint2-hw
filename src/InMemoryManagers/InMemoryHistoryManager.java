@@ -2,9 +2,11 @@ package InMemoryManagers;
 
 import Managers.HistoryManager;
 import Tasks.Task;
+
+import java.io.Serializable;
 import java.util.*;
 
-public class InMemoryHistoryManager implements HistoryManager {    // Менеджер просмотренных задач
+public class InMemoryHistoryManager implements HistoryManager, Serializable {    // Менеджер просмотренных задач
     private Map<Integer, Node> viewedTasks = new HashMap<>();    // вспомогательная хеш-карта с узлами и id задач
     private Node<Task> head;
     private Node<Task> tail;
