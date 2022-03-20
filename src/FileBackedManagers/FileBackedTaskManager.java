@@ -9,6 +9,7 @@ import java.io.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager implements Serializable {    // Менеджер с автосохранением
     private static String fileTasksInfo;
+    private static final long serialVersionUID = 1L;
 
     public FileBackedTaskManager (String fileTasksInfo) {    // конструктор со строковым обозначением файла
         this.fileTasksInfo = fileTasksInfo;
