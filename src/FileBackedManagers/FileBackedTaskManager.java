@@ -23,7 +23,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {    // Мене�
         this.fileTasksInfo = fileTasksInfo;
     }
 
-    public void save() throws ManagerSaveException {    // сохранение экземпляра класса FileBackedTaskManager в файл
+    public void save() throws ManagerSaveException {    // сохранение задач и списка просмотра в файл
         StringBuilder builder = new StringBuilder("id,type,name,status,description,epic\n");
         for (Task task : this.getAllTasks()) {
             builder.append(toString(task) + "\n");
