@@ -22,6 +22,11 @@ public class Epic extends Task {    // наследственный класс �
     }
 
     @Override
+    public TypeOfTask getType() {    // получить строковое обозначение типа задачи
+        return TypeOfTask.EPIC;
+    }
+
+    @Override
     public String toString() {    // переопределили метод для строкового представления информации об эпике
         return "Epic{" + "name='" + getName() + '\'' + ", description='" + getDescription() + '\''
             + ", numberOfSubtasks=" + listOfSubtasks.size() + ", status=" + getStatus() + ", id=" + getId() + '}';

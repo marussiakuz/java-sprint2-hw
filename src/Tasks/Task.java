@@ -1,12 +1,11 @@
 package Tasks;
 
-import java.io.Serializable;
 
-public class Task implements Serializable {    // родительский класс Задача
+public class Task {    // родительский класс Задача
     private final String name;
     private final String description;
     private static int count = 0;
-    private final int id;
+    private int id;
     private StatusOfTask status;
 
     public Task(String name, String description) {    // конструктор экземпляра класса Задача
@@ -18,6 +17,10 @@ public class Task implements Serializable {    // родительский кл�
 
     public int getId() {    // получить id номер задачи
         return id;
+    }
+
+    public void setId(int id) {    // установить id номер
+        this.id = id;
     }
 
     public StatusOfTask getStatus() {    // получить строковое обозначение статуса задачи
@@ -34,6 +37,10 @@ public class Task implements Serializable {    // родительский кл�
 
     public String getDescription() {    // получить описание задачи
         return description;
+    }
+
+    public TypeOfTask getType() {    // получить строковое обозначение типа задачи
+        return TypeOfTask.TASK;
     }
 
     @Override

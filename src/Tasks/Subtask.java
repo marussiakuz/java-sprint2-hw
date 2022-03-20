@@ -13,6 +13,11 @@ public class Subtask extends Task {    // наследственный клас�
     }
 
     @Override
+    public TypeOfTask getType() {    // получить строковое обозначение типа задачи
+        return TypeOfTask.SUBTASK;
+    }
+
+    @Override
     public String toString() {    // переопределили метод для строкового представления информации о подзадаче
         return "Subtask{" + "name='" + getName() + '\'' + ", description='" + getDescription() + '\''
             + ", epicName='" + epic.getName() + '\'' + ", status=" + getStatus() + ", id=" + getId() + '}';
