@@ -90,7 +90,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements Serial
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) {    // Тестирование функции автосохранения (5-й спринт)
         FileBackedTaskManager managerFirst = new FileBackedTaskManager("savedTasks");
 
         Epic epic1 = new Epic("Epic1", "has 3 subtasks");
@@ -133,8 +133,8 @@ public class FileBackedTaskManager extends InMemoryTaskManager implements Serial
         managerFirst.getTask(7);
 
         subtask4.setStatus(StatusOfTask.DONE);
-        managerFirst.updateTask(subtask4);
-        managerFirst.deleteOneTask(subtask5.getId());    // удалили подзадачу с id 7
+        managerFirst.updateTask(subtask4);    // поменяли статус подзадачи c id 6 (относится к epic2)
+        managerFirst.deleteOneTask(subtask5.getId());    // удалили подзадачу с id 7 (относится к epic2)
 
         // воссоздаем ранее сохраненный экземпляр класса FileBackedTaskManager из того же файла
         FileBackedTaskManager managerSecond = FileBackedTaskManager.loadFromFile("savedTasks");

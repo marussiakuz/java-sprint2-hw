@@ -2,7 +2,7 @@ import InMemoryManagers.InMemoryTaskManager;
 import Tasks.Epic;
 import Tasks.Subtask;
 
-public class Main {    // тестирование проекта на этапе 4-го спринта
+public class Main {    // тестирование проекта на этапе 4-го спринта (на этапе 5-го - в классе FileBackedTaskManager)
     public static void main(String[] args) {
         Epic epic1 = new Epic("Epic1", "has 3 subtasks");
         Subtask subtask1 = new Subtask("Subtask1", "one", epic1);

@@ -16,10 +16,6 @@ public class Task implements Serializable {    // родительский кл�
         id = ++count;
     }
 
-    /*public Task () {
-        this.name = getName();
-    }*/
-
     public int getId() {    // получить id номер задачи
         return id;
     }
