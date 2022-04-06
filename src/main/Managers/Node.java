@@ -1,4 +1,4 @@
-package InMemoryManagers;
+package Managers;
 
 import Tasks.Task;
 

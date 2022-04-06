@@ -1,18 +1,22 @@
-import InMemoryManagers.InMemoryTaskManager;
+import Managers.InMemoryTaskManager;
 import Tasks.Epic;
+import Tasks.StatusOfTask;
 import Tasks.Subtask;
 
 public class Main {    // тестирование проекта на этапе 4-го спринта (на этапе 5-го - в классе FileBackedTaskManager)
     public static void main(String[] args) {
         Epic epic1 = new Epic("Epic1", "has 3 subtasks");
+
         Subtask subtask1 = new Subtask("Subtask1", "one", epic1);
         Subtask subtask2 = new Subtask("Subtask2", "two", epic1);
         Subtask subtask3 = new Subtask("Subtask3", "three", epic1);
-        epic1.addSubtask(subtask1);
-        epic1.addSubtask(subtask2);
-        epic1.addSubtask(subtask3);
 
         Epic epic2 = new Epic("Epic2", "has no subtasks");
+        subtask1.setStatus(StatusOfTask.DONE);
+        subtask2.setStatus(StatusOfTask.DONE);
+        subtask3.setStatus(StatusOfTask.DONE);
+
+        System.out.println(epic1.getListOfSubtasks());
 
         InMemoryTaskManager manager = new InMemoryTaskManager();
         manager.addTask(epic1);    // добавляем задачи

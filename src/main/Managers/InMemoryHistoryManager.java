@@ -1,7 +1,8 @@
-package InMemoryManagers;
+package Managers;
 
-import Managers.HistoryManager;
 import Tasks.Task;
+import Tasks.TaskNotFoundException;
+
 import java.util.*;
 
 public class InMemoryHistoryManager implements HistoryManager {    // Менеджер просмотренных задач
@@ -11,7 +12,7 @@ public class InMemoryHistoryManager implements HistoryManager {    // Менед
 
     private void linkLast(Task task) {    // добавить задачу в конец связанного списка и во вспомогательную хэш-карту
         final Node<Task> previous = tail;
-        final Node<Task> newNode = new Node<>(previous, task, null);
+        final Node<Task> newNode = new Node<Task>(previous, task, null);
         tail = newNode;
         if (previous == null) head = newNode;
         else previous.setNext(newNode);
@@ -33,6 +34,7 @@ public class InMemoryHistoryManager implements HistoryManager {    // Менед
         final Node<Task> next = node.getNext();
         if (node == head && node == tail) {
             head = null;
+            tail = null;
         } else if (node == tail && node != head) {
             previous.setNext(null);
             tail = previous;
@@ -52,6 +54,8 @@ public class InMemoryHistoryManager implements HistoryManager {    // Менед
 
     @Override
     public void remove(int id) {    // удалить задачу из списка просмотренных по её id
+        if (!viewedTasks.containsKey(id))
+            throw new TaskNotFoundException(String.format("The task with id=%d does not exist", id));
         removeNode(viewedTasks.get(id));
         viewedTasks.remove(id);
     }
