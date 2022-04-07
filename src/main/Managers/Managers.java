@@ -1,5 +1,8 @@
 package Managers;
 
+import Managers.HistoryManager.*;
+import Managers.TaskManager.*;
+
 public class Managers {    // утилитарный класс для создания объекта менеджера задач
 
     public static TaskManager getDefault() {    // возвращает объект, реализующий интерфейс TaskManager

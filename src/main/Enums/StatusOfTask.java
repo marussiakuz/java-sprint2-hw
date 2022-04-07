@@ -1,4 +1,4 @@
-package Tasks;
+package Enums;
 
 public enum StatusOfTask {    // перечисление возможных статусов
     NEW("NEW"),

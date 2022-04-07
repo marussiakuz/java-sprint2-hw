@@ -1,7 +1,8 @@
-package FileBackedManagers;
+package Managers.TaskManager;
 
-import Managers.InMemoryTaskManager;
-import Managers.HistoryManager;
+import Enums.*;
+import Exceptions.*;
+import Managers.HistoryManager.HistoryManager;
 import Tasks.*;
 
 import java.io.FileWriter;
@@ -12,9 +13,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Month;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -245,7 +244,5 @@ public class FileBackedTaskManager extends InMemoryTaskManager {    // Мене�
         System.out.println(managerFirst.getAllTasks().equals(managerSecond.getAllTasks()));
         // сравнение сохраненной и восстановленной истории задач
         System.out.println(managerFirst.history().equals(managerSecond.history()));
-
-
     }
 }

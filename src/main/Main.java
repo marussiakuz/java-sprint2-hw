@@ -1,7 +1,6 @@
-import Managers.InMemoryTaskManager;
-import Tasks.Epic;
-import Tasks.StatusOfTask;
-import Tasks.Subtask;
+import Managers.TaskManager.InMemoryTaskManager;
+import Tasks.*;
+import Enums.StatusOfTask;
 
 public class Main {    // тестирование проекта на этапе 4-го спринта (на этапе 5-го - в классе FileBackedTaskManager)
     public static void main(String[] args) {

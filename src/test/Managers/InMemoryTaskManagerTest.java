@@ -1,7 +1,6 @@
 package Managers;
 
-import Managers.InMemoryTaskManager;
-import Managers.TaskManager;
+import Managers.TaskManager.*;
 
 public class InMemoryTaskManagerTest extends TaskManagerTest<TaskManager> {
 

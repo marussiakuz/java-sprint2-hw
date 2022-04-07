@@ -1,11 +1,9 @@
 package Managers;
 
-import Managers.InMemoryHistoryManager;
-import Managers.InMemoryTaskManager;
-import Tasks.Epic;
-import Tasks.Subtask;
-import Tasks.Task;
-import Tasks.TaskNotFoundException;
+import Managers.HistoryManager.InMemoryHistoryManager;
+import Managers.TaskManager.InMemoryTaskManager;
+import Tasks.*;
+import Exceptions.TaskNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

@@ -1,7 +1,7 @@
-package Managers;
+package Managers.HistoryManager;
 
 import Tasks.Task;
-import Tasks.TaskNotFoundException;
+import Exceptions.TaskNotFoundException;
 
 import java.util.*;
 

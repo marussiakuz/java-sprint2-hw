@@ -1,4 +1,4 @@
-package Tasks;
+package Enums;
 
 public enum TypeOfTask {    // перечисление типов задач
     TASK("TASK"),

@@ -1,4 +1,4 @@
-package Tasks;
+package Exceptions;
 
 public class TimeIntersectionException extends RuntimeException {    // исключение в случае пересечения по времени
 

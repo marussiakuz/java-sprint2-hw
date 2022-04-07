@@ -1,4 +1,4 @@
-package Tasks;
+package Exceptions;
 
 public class TaskNotFoundException extends RuntimeException {    // Исключение, связанное с отсутствием задачи или id
 

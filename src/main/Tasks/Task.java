@@ -1,5 +1,8 @@
 package Tasks;
 
+import Enums.*;
+import Exceptions.TimeIntersectionException;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -55,8 +58,8 @@ public class Task implements Comparable<Task> {    // родительский �
         if (startTime == null) return;
         if (intersectionChecker.checkTimeAvailability(duration, startTime)) this.startTime = startTime;
         else throw new TimeIntersectionException(String.format("The selected time is not available, " +
-            "the nearest available time is %s", formatDate(intersectionChecker
-            .getAvailableDateTime(duration, startTime))));
+            "the nearest available time is %s", formatDate(intersectionChecker.getAvailableDateTime(duration,
+            startTime))));
     }
 
     public LocalDateTime getStartTime() {

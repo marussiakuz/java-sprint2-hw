@@ -1,9 +1,8 @@
-package Managers;
+package Managers.TaskManager;
 
-import Tasks.Epic;
-import Tasks.Subtask;
-import Tasks.Task;
-import Tasks.TaskNotFoundException;
+import Managers.HistoryManager.InMemoryHistoryManager;
+import Tasks.*;
+import Exceptions.TaskNotFoundException;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -148,6 +147,6 @@ public class InMemoryTaskManager implements TaskManager {    // Менеджер
         manager.addTask(task2);
         manager.addTask(task3);
         // выводим на печать список в порядке удаления по времени
-        System.out.println(manager.prioritizedTasks);
+        System.out.println(manager.getPrioritizedTasks());
     }
 }
