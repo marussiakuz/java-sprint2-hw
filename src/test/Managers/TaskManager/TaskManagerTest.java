@@ -1,16 +1,19 @@
-package Managers;
+package Managers.TaskManager;
 
 import Enums.StatusOfTask;
 import Exceptions.TaskNotFoundException;
-import Managers.TaskManager.TaskManager;
+import Exceptions.TimeIntersectionException;
 import Tasks.*;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.Month;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
-public abstract class TaskManagerTest <T extends TaskManager> {
+
+abstract class TaskManagerTest <T extends TaskManager> {
 
     public T manager;
     public Epic epic;
@@ -72,6 +75,17 @@ public abstract class TaskManagerTest <T extends TaskManager> {
         assertNotNull(manager.getTask(idNewTask), "задача равна null");
         assertEquals(newSubtask, manager.getTask(idNewTask), "возвращает не ту задачу");
         assertTrue(manager.getAllTasks().contains(newSubtask), "в списке нет добавленной задачи");
+
+        Duration duration = Duration.ofHours(3);
+        LocalDateTime dateOne = LocalDateTime.of(2022, Month.APRIL, 8, 15, 15);
+        LocalDateTime dateTwo = LocalDateTime.of(2022, Month.APRIL, 8, 17, 15);
+
+        TimeIntersectionException ex = assertThrows(TimeIntersectionException.class, () -> {
+            manager.addTask(new Subtask("SubOne", "", epic, duration, dateOne));
+            manager.addTask(new Subtask("SubTwo", "", epic, duration, dateTwo));
+        });
+        assertEquals("The selected time is not available, the nearest available time is 08.04.2022 18:15",
+                ex.getMessage());
     }
     // проверка обновления задачи
     @Test

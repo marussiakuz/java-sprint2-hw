@@ -1,9 +1,6 @@
-package Managers;
+package Managers.TaskManager;
 
-import Managers.TaskManager.*;
 import Tasks.*;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -11,6 +8,8 @@ import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class FileBackedTaskManagerTest extends TaskManagerTest<TaskManager> {
@@ -23,7 +22,6 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<TaskManager> {
     private static Subtask subtask3;
     private static Subtask subtask4;
 
-    @Override
     public TaskManager setManager() {
         return new FileBackedTaskManager("/Users/Marya/savedOne.csv");
     }
@@ -35,7 +33,7 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<TaskManager> {
         LocalDateTime date1 = LocalDateTime.of(2022, Month.NOVEMBER, 2, 13, 30);
         LocalDateTime date2 = LocalDateTime.of(2022,Month.NOVEMBER, 2, 15, 30);
         LocalDateTime date3 = LocalDateTime.of(2022,Month.NOVEMBER, 3, 15, 30);
-        LocalDateTime date4 = LocalDateTime.of(2022,Month.NOVEMBER, 1, 17, 30);
+        LocalDateTime date4 = LocalDateTime.of(2022, Month.NOVEMBER, 1, 17, 30);
 
         Duration duration1 = Duration.ofHours(2);
         Duration duration2 = Duration.ofDays(1);
@@ -68,11 +66,10 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<TaskManager> {
         manager2.getTask(subtask2.getId());
         manager2.getTask(subtask1.getId());
         manager2.getTask(task2.getId());
-
     }
-    // проверка сохранения задач и истороии
+    // проверка сохранения задач и истории
     @Test
-    public void save() {
+    void save() {
         String taskString = manager2.toString(task2);
         Task taskFromString = manager2.taskFromString(taskString);
 
@@ -94,9 +91,9 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<TaskManager> {
 
         assertEquals(history, expected,"восстановленная история задач не соответствует списку просмотренных id");
     }
-
+    // проверка восстановления задач и истории из файла
     @Test
-    public void loadFromFile() {
+    void loadFromFile() {
         FileBackedTaskManager manager3 = FileBackedTaskManager.loadFromFile("/Users/Marya/savedTwo.csv");
 
         assertEquals(manager3.history(), manager2.history(),"списки с историей не идентичны");

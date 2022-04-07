@@ -1,16 +1,15 @@
 package Tasks;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import Exceptions.TaskNotFoundException;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import static Enums.StatusOfTask.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Month;
 
-import static Enums.StatusOfTask.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 class EpicTest {
 

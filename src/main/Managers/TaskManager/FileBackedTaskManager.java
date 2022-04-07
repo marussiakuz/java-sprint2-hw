@@ -101,12 +101,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {    // Мене�
     }
 
     public static String toString(HistoryManager manager) {    // преобразование HistoryManager в строку
+        if (manager.getHistory().isEmpty()) return "";
         List<String> history = manager.getHistory().stream().map(Task::getId).map(s -> String.valueOf(s))
             .collect(Collectors.toList());
         return String.join(",", history);
     }
 
     public static List<Integer> historyFromString(String value) {    // преобразование строки в список просмотра в виде id задач
+        if (value.equals("\n")) return null;
         List<Integer> history = Arrays.stream(value.split(",")).map(s -> Integer.parseInt(s)).collect(Collectors
             .toList());
         return history;
@@ -121,10 +123,12 @@ public class FileBackedTaskManager extends InMemoryTaskManager {    // Мене�
             e.printStackTrace();
         }
         List<String> tasksAndHistory = Arrays.stream(content.split("\n")).collect(Collectors.toList());
+        if(tasksAndHistory.size()==1) return manager;
         for (int i = 1; i < tasksAndHistory.size()-2; i++) {
             manager.taskFromString(tasksAndHistory.get(i));
         }
         List<Integer> history = historyFromString(tasksAndHistory.get(tasksAndHistory.size()-1));
+        if (history == null) return manager;
         Collections.reverse(history);
         for (Integer id : history) {
             Task task = manager.getListOfAllTasks().get(id);
@@ -185,6 +189,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {    // Мене�
     }
 
     public static void main(String[] args) {    // Тестирование функции автосохранения (5-й спринт)
+
         FileBackedTaskManager managerFirst = new FileBackedTaskManager("/Users/Marya/saved.csv");
 
         LocalDateTime date1 = LocalDateTime.of(2022, Month.MAY, 2, 13, 30);
