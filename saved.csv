@@ -1,12 +1,2 @@
-id,type,name,status,description,epic
-1,EPIC,Epic1,NEW,has 3 subtasks
-2,SUBTASK,Subtask1,NEW,one,1
-3,SUBTASK,Subtask2,NEW,two,1
-4,SUBTASK,Subtask3,NEW,three,1
-5,EPIC,Epic2,DONE,has 2 subtasks
-6,SUBTASK,Subtask4,DONE,four,5
-8,TASK,Task1,NEW,just task1
-9,TASK,Task2,NEW,just task2
-10,TASK,Task3,NEW,just task3
+id,type,name,status,description, duration, start, finish,epic
 
-6,5,4,9,1,3

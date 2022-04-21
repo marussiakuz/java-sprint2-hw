@@ -69,4 +69,9 @@ public class TimeIntersectionChecker {    // Класс для проверки 
         start = LocalDateTime.of(start.toLocalDate(), time);
         return start;
     }
+
+    public TimeIntersectionChecker updateTimeIntersectionChecker (){
+        periodChecker.clear();
+        return new TimeIntersectionChecker();
+    }
 }

@@ -42,13 +42,13 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<TaskManager> {
         Duration duration5 = Duration.ofMinutes(180);
 
         epic1 = new Epic("Epic1", "has 3 subtasks");
-        subtask1 = new Subtask("Subtask1", "one", epic1, duration1, date1);
-        subtask2 = new Subtask("Subtask2", "two", epic1, duration2, date2);
-        subtask3 = new Subtask("Subtask3", "three", epic1, duration3, date3);
+        subtask1 = new Subtask("Subtask1", "one", epic1.getId(), duration1, date1);
+        subtask2 = new Subtask("Subtask2", "two", epic1.getId(), duration2, date2);
+        subtask3 = new Subtask("Subtask3", "three", epic1.getId(), duration3, date3);
 
         Epic epic2 = new Epic("Epic2", "has 2 subtasks");
-        subtask4 = new Subtask("Subtask4", "four", epic2, duration5, null);
-        Subtask subtask5 = new Subtask("Subtask5", "five", epic2, duration4, date4);
+        subtask4 = new Subtask("Subtask4", "four", epic2.getId(), duration5, null);
+        Subtask subtask5 = new Subtask("Subtask5", "five", epic2.getId(), duration4, date4);
 
         Task task1 = new Task("Task2", "just task2");
         task2 = new Task("Task3", "just task3");

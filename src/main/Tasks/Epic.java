@@ -7,22 +7,28 @@ import Exceptions.TaskNotFoundException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Epic extends Task {    // наследственный класс Эпик от класса Задача
-    private List<Subtask> listOfSubtasks = new ArrayList<>();
-    private LocalDateTime endTime;
+    private transient Map<Integer, Subtask> listOfSubtasks = new HashMap<>();
+    private transient LocalDateTime endTime;
 
     public Epic(String name, String description) {    // конструктор экземпляра класса Эпик
         super(name, description);
     }
 
+    public Epic(int id, String name, String description) {    // конструктор экземпляра класса Эпик
+        super(id, name, description);
+    }
+
     public List<Subtask> getListOfSubtasks() {    // получить коллекцию подзадач
-        return listOfSubtasks;
+        return listOfSubtasks.values().stream().toList();
     }
 
     public void addSubtask(Subtask subtask) {    // добавить подзадачу в коллекцию эпика
-        listOfSubtasks.add(subtask);
+        listOfSubtasks.put(subtask.getId(), subtask);
         updateStatus();
         updateDurationAndTime();
     }
@@ -31,7 +37,7 @@ public class Epic extends Task {    // наследственный класс �
         if (!getListOfSubtasks().contains(subtask))
             throw new TaskNotFoundException(String.format("The subtask belongs to another epic. " +
                     "Call the method from an epic %s", subtask.getEpic().getName()));
-        this.listOfSubtasks.remove(subtask);
+        listOfSubtasks.remove(subtask.getId());
         updateStatus();
         updateDurationAndTime();
     }
@@ -46,7 +52,7 @@ public class Epic extends Task {    // наследственный класс �
         endTime = null;
         LocalDateTime start = null;
         Duration totalDuration = null;
-        for (Subtask subtask : listOfSubtasks) {
+        for (Subtask subtask : listOfSubtasks.values()) {
             if (totalDuration != null && subtask.getDuration() != null) {
                 totalDuration = totalDuration.plus(subtask.getDuration());
             }
@@ -60,11 +66,13 @@ public class Epic extends Task {    // наследственный класс �
         }
         setDuration(totalDuration);
         setStartTime(start);
+        if (totalDuration != null && start != null && endTime != null && Duration.between(start, endTime).toMinutes()
+                < totalDuration.toMinutes()) endTime = start.plus(totalDuration);
     }
 
     public StatusOfTask updateStatus() {    // вспомогательный метод для контроля над текущим статусом эпика
         int countStatusDone = 0;
-        for (Subtask subtask : listOfSubtasks) {
+        for (Subtask subtask : listOfSubtasks.values()) {
             switch (subtask.getStatus()) {
                 case IN_PROGRESS:
                     setStatus(StatusOfTask.IN_PROGRESS);
@@ -100,7 +108,7 @@ public class Epic extends Task {    // наследственный класс �
     @Override
     public int hashCode() {
         int result = super.hashCode() * 31;
-        for (Subtask subtask : listOfSubtasks) {
+        for (Subtask subtask : listOfSubtasks.values()) {
             result += 31 * subtask.getId();
         }
         return result;

@@ -21,9 +21,9 @@ class EpicTest {
     @BeforeEach
     public synchronized void beforeEach() {
         epic = new Epic("EpicTest", "for testing");
-        subtask1 = new Subtask("sub1", "one", epic);
-        subtask2 = new Subtask("sub2", "two", epic);
-        subtask3 = new Subtask("sub3", "three", epic);
+        subtask1 = new Subtask("sub1", "one", epic.getId());
+        subtask2 = new Subtask("sub2", "two", epic.getId());
+        subtask3 = new Subtask("sub3", "three", epic.getId());
     }
     // проверка получения списка подзадач
     @Test
@@ -36,7 +36,7 @@ class EpicTest {
     // проверка добавления подзадачи
     @Test
     void addSubtask() {
-        Subtask subtask4 = new Subtask("newSubtask", "four", epic);
+        Subtask subtask4 = new Subtask("newSubtask", "four", epic.getId());
 
         assertTrue(epic.getListOfSubtasks().contains(subtask4),"подзадача не добавилась");
         assertTrue(epic.getListOfSubtasks().size() == 4, "размер списка не увеличился");
@@ -57,7 +57,7 @@ class EpicTest {
         assertTrue(epic.getStatus() == NEW, "после удаления не обновился статус");
 
         Epic newEpic = new Epic("newEpic", "");
-        Subtask newSubtask = new Subtask("newSubtask", "belongs to another epic", newEpic);
+        Subtask newSubtask = new Subtask("newSubtask", "belongs to another epic", newEpic.getId());
 
         TaskNotFoundException ex = assertThrows(TaskNotFoundException.class, () -> {
             epic.deleteSubtask(newSubtask);

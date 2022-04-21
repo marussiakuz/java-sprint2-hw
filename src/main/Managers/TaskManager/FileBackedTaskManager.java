@@ -20,6 +20,9 @@ import java.util.stream.Stream;
 public class FileBackedTaskManager extends InMemoryTaskManager {    // Менеджер с автосохранением
     private String fileTasksInfo;
 
+    public FileBackedTaskManager () {
+    }
+
     public FileBackedTaskManager (String fileTasksInfo) {    // конструктор со строковым обозначением файла
         this.fileTasksInfo = fileTasksInfo;
     }
@@ -59,9 +62,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {    // Мене�
                 task = new Epic(taskInfo[2], taskInfo[4]);
                 break;
             case "SUBTASK" :
-                Epic epic = (Epic) getListOfAllTasks().get((Integer.parseInt(taskInfo[8])));
-                task = new Subtask(taskInfo[2], taskInfo[4], epic);
-                if (restoreDurationAndTime(task, taskInfo[5], taskInfo[6])) epic.updateDurationAndTime();
+                int epicId = Integer.parseInt(taskInfo[8]);
+                task = new Subtask(taskInfo[2], taskInfo[4], epicId);
+                if (restoreDurationAndTime(task, taskInfo[5], taskInfo[6])) getEpic(epicId).updateDurationAndTime();
         }
         task.setStatus(StatusOfTask.valueOf(taskInfo[3]));
         task.setId(Integer.parseInt(taskInfo[0]));
@@ -82,7 +85,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {    // Мене�
         return true;
     }
 
-    private Duration durationFromString (String value) {    // преобразование строки в Duration
+    public static Duration durationFromString (String value) {    // преобразование строки в Duration
         String[] data = value.split(" ");
         Duration duration = Duration.ofMinutes(0);
         for (int i = 1; i < data.length; i++) {
@@ -124,12 +127,21 @@ public class FileBackedTaskManager extends InMemoryTaskManager {    // Мене�
         }
         List<String> tasksAndHistory = Arrays.stream(content.split("\n")).collect(Collectors.toList());
         if(tasksAndHistory.size()==1) return manager;
-        for (int i = 1; i < tasksAndHistory.size()-2; i++) {
+        boolean hasHistory = false;
+        List<Integer> history = null;
+        for (int i = 1; i < tasksAndHistory.size(); i++) {
+            if (i == tasksAndHistory.size() - 2 && tasksAndHistory.get(i).isEmpty()) {
+                hasHistory = true;
+                continue;
+            }
+            if (i == tasksAndHistory.size() - 1 && hasHistory == true) {
+                history = historyFromString(tasksAndHistory.get(tasksAndHistory.size() - 1));
+                Collections.reverse(history);
+                break;
+            }
             manager.taskFromString(tasksAndHistory.get(i));
         }
-        List<Integer> history = historyFromString(tasksAndHistory.get(tasksAndHistory.size()-1));
         if (history == null) return manager;
-        Collections.reverse(history);
         for (Integer id : history) {
             Task task = manager.getListOfAllTasks().get(id);
             manager.getInMemoryHistoryManager().add(task);
@@ -190,7 +202,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {    // Мене�
 
     public static void main(String[] args) {    // Тестирование функции автосохранения (5-й спринт)
 
-        FileBackedTaskManager managerFirst = new FileBackedTaskManager("/Users/Marya/saved.csv");
+        FileBackedTaskManager managerFirst = new FileBackedTaskManager("saved2.csv");
 
         LocalDateTime date1 = LocalDateTime.of(2022, Month.MAY, 2, 13, 30);
         LocalDateTime date2 = LocalDateTime.of(2022,Month.MAY, 2, 15, 30);
@@ -205,13 +217,13 @@ public class FileBackedTaskManager extends InMemoryTaskManager {    // Мене�
         Duration duration5 = Duration.ofMinutes(180);
 
         Epic epic1 = new Epic("Epic1", "has 3 subtasks");
-        Subtask subtask1 = new Subtask("Subtask1", "one", epic1, duration1, date1);
-        Subtask subtask2 = new Subtask("Subtask2", "two", epic1, duration2, date2);
-        Subtask subtask3 = new Subtask("Subtask3", "three", epic1, duration3, date3);
+        Subtask subtask1 = new Subtask("Subtask1", "one", epic1.getId(), duration1, date1);
+        Subtask subtask2 = new Subtask("Subtask2", "two", epic1.getId(), duration2, date2);
+        Subtask subtask3 = new Subtask("Subtask3", "three", epic1.getId(), duration3, date3);
 
         Epic epic2 = new Epic("Epic2", "has 2 subtasks");
-        Subtask subtask4 = new Subtask("Subtask4", "four", epic2, duration5, null);
-        Subtask subtask5 = new Subtask("Subtask5", "five", epic2, duration4, date4);
+        Subtask subtask4 = new Subtask("Subtask4", "four", epic2.getId(), duration5, null);
+        Subtask subtask5 = new Subtask("Subtask5", "five", epic2.getId(), duration4, date4);
 
         Task task1 = new Task("Task1", "just task1", duration1, date5);
         Task task2 = new Task("Task2", "just task2");
@@ -243,7 +255,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {    // Мене�
         managerFirst.deleteOneTask(subtask5.getId());    // удалили подзадачу с id 7 (относится к epic2)
 
         // воссоздаем ранее сохраненный экземпляр класса FileBackedTaskManager из того же файла
-        FileBackedTaskManager managerSecond = FileBackedTaskManager.loadFromFile("/Users/Marya/saved.csv");
+        FileBackedTaskManager managerSecond = FileBackedTaskManager.loadFromFile("saved2.csv");
 
         // сравнение сохраненного и восстановленного списка задач
         System.out.println(managerFirst.getAllTasks().equals(managerSecond.getAllTasks()));

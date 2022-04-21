@@ -1,38 +1,45 @@
 package Tasks;
 
 import Enums.*;
+import Managers.TaskManager.InMemoryTaskManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class Subtask extends Task {    // наследственный класс Подзадача от класса Задача
-    private final Epic epic;
+    private final int epicId;
 
-    public Subtask(String name, String description, Epic epic) {    // конструктор экземпляра класса Подзадача
+    public Subtask(String name, String description, int epicId) {    // конструктор экземпляра класса Подзадача
         super(name, description);
-        this.epic = epic;
-        epic.addSubtask(this);
+        getManager().getEpic(epicId).addSubtask(this);
+        this.epicId = epicId;
     }
 
-    public Subtask(String name, String description, Epic epic, Duration duration, LocalDateTime startTime) {    // конструктор экземпляра класса Подзадача
+    public Subtask(String name, String description, int epicId, Duration duration, LocalDateTime startTime) {    // конструктор экземпляра класса Подзадача
         super(name, description, duration, startTime);
-        this.epic = epic;
-        epic.addSubtask(this);
+        this.epicId = epicId;
+        getManager().getEpic(epicId).addSubtask(this);
+    }
+
+    public Subtask(int id, String name, String description, int epicId) {    // конструктор экземпляра класса Подзадача
+        super(id, name, description);
+        this.epicId = epicId;
+        getManager().getEpic(epicId).addSubtask(this);
     }
 
     public Epic getEpic() {    // получить эпик, к которому относится подзадача
-        return epic;
+        return getManager().getEpic(epicId);
     }
 
     public void setStatus(StatusOfTask status) {    // установить статус
         super.setStatus(status);
-        epic.updateStatus();
+        getManager().getEpic(epicId).updateStatus();
     }
     // переопределенный метод сохранения длительности и старта задачи
     @Override
     public void setDurationAndStartTime(Duration duration, LocalDateTime startTime) {
         super.setDurationAndStartTime(duration, startTime);
-        if (epic != null) getEpic().updateDurationAndTime();
+        if (getManager().getEpic(epicId) != null) getEpic().updateDurationAndTime();
     }
 
     @Override
@@ -49,13 +56,13 @@ public class Subtask extends Task {    // наследственный клас�
 
     @Override
     public int hashCode() {
-        return super.hashCode() * 31 + (epic == null? 0 : epic.hashCode());
+        return super.hashCode() * 31 + epicId;
     }
 
     @Override
     public String toString() {    // переопределили метод для строкового представления информации о подзадаче
         return "Subtask{" + "name='" + getName() + '\'' + ", description='" + getDescription() + '\''
-            + ", epicName='" + epic.getName() + '\'' + ", status=" + getStatus() + ", duration=" + formatDuration()
+            + ", epicId='" + epicId + '\'' + ", status=" + getStatus() + ", duration=" + formatDuration()
             + ", start=" + formatDate(getStartTime()) + ", id=" + getId() + '}';
     }
 }

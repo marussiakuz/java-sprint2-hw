@@ -2,6 +2,11 @@ package Tasks;
 
 import Enums.*;
 import Exceptions.TimeIntersectionException;
+import Managers.TaskManager.FileBackedTaskManager;
+import Managers.TaskManager.InMemoryTaskManager;
+import Managers.TaskManager.TaskManager;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -11,18 +16,20 @@ import java.util.Objects;
 public class Task implements Comparable<Task> {    // родительский класс Задача
     private final String name;
     private final String description;
-    private static int count = 0;
+    private transient static int count = 0;
     private int id;
     private StatusOfTask status;
     private Duration duration;
     private LocalDateTime startTime;
-    private static TimeIntersectionChecker intersectionChecker = new TimeIntersectionChecker();
+    private transient static TimeIntersectionChecker intersectionChecker = new TimeIntersectionChecker();
+    private transient static InMemoryTaskManager manager = new InMemoryTaskManager();
 
     public Task(String name, String description) {    // конструктор экземпляра класса Задача
         this.name = name;
         this.description = description;
         this.status = StatusOfTask.NEW;
         id = ++count;
+        manager.addTask(this);
     }
 
     public Task(String name, String description, Duration duration, LocalDateTime startTime) {    // конструктор экземпляра класса Задача
@@ -31,6 +38,15 @@ public class Task implements Comparable<Task> {    // родительский �
         this.status = StatusOfTask.NEW;
         setDurationAndStartTime(duration, startTime);
         id = ++count;
+        manager.addTask(this);
+    }
+
+    public Task(int id, String name, String description) {    // конструктор экземпляра класса Задача
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = StatusOfTask.NEW;
+        manager.addTask(this);
     }
 
     public int getId() {    // получить id номер задачи
@@ -38,7 +54,9 @@ public class Task implements Comparable<Task> {    // родительский �
     }
 
     public void setId(int id) {    // установить id номер
+        manager.getListOfAllTasks().remove(id);
         this.id = id;
+        manager.getListOfAllTasks().put(id, this);
     }
 
     public Duration getDuration() {
@@ -91,6 +109,10 @@ public class Task implements Comparable<Task> {    // родительский �
         return TypeOfTask.TASK;
     }
 
+    public static InMemoryTaskManager getManager() {
+        return manager;
+    }
+
     public String formatDuration() {
         if (duration == null) return "not set";
         int days = (int) duration.toDays();
@@ -113,6 +135,10 @@ public class Task implements Comparable<Task> {    // родительский �
         if (dateTime == null) return "not set";
         final DateTimeFormatter formatOfDate = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         return dateTime.format(formatOfDate);
+    }
+
+    public static void clearIntersectionChecker() {
+        intersectionChecker = intersectionChecker.updateTimeIntersectionChecker();
     }
 
     @Override

@@ -28,9 +28,9 @@ abstract class TaskManagerTest <T extends TaskManager> {
     public void beforeEach() {
         manager = setManager();
         epic = new Epic("EpicTest", "for testing");
-        subtask1 = new Subtask("sub1", "one", epic);
-        subtask2 = new Subtask("sub2", "two", epic);
-        subtask3 = new Subtask("sub3", "three", epic);
+        subtask1 = new Subtask("sub1", "one", epic.getId());
+        subtask2 = new Subtask("sub2", "two", epic.getId());
+        subtask3 = new Subtask("sub3", "three", epic.getId());
         task = new Task("Task", "oneTask");
         manager.addTask(epic);
         manager.addTask(subtask1);
@@ -65,7 +65,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     // проверка добавления задачи
     @Test
     void addTask() {
-        Subtask newSubtask = new Subtask("newSubtask", "four", epic);
+        Subtask newSubtask = new Subtask("newSubtask", "four", epic.getId());
         final int idNewTask = newSubtask.getId();
         newSubtask.setStatus(StatusOfTask.IN_PROGRESS);
         manager.addTask(newSubtask);
@@ -81,8 +81,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
         LocalDateTime dateTwo = LocalDateTime.of(2022, Month.APRIL, 8, 17, 15);
 
         TimeIntersectionException ex = assertThrows(TimeIntersectionException.class, () -> {
-            manager.addTask(new Subtask("SubOne", "", epic, duration, dateOne));
-            manager.addTask(new Subtask("SubTwo", "", epic, duration, dateTwo));
+            manager.addTask(new Subtask("SubOne", "", epic.getId(), duration, dateOne));
+            manager.addTask(new Subtask("SubTwo", "", epic.getId(), duration, dateTwo));
         });
         assertEquals("The selected time is not available, the nearest available time is 08.04.2022 18:15",
                 ex.getMessage());
@@ -118,7 +118,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
         });
         assertEquals("The task with id=15 does not exist", ex.getMessage());
 
-        Subtask newSubtask = new Subtask("newSubtask", "four", epic);
+        Subtask newSubtask = new Subtask("newSubtask", "four", epic.getId());
         newSubtask.setStatus(StatusOfTask.IN_PROGRESS);
         manager.addTask(newSubtask);
 

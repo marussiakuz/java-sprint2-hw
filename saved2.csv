@@ -1,0 +1,12 @@
+id,type,name,status,description, duration, start, finish,epic
+1,EPIC,Epic1,NEW,has 3 subtasks,1 day 3 hours 30 minutes,02.05.2022 13:30,03.05.2022 17:00
+2,SUBTASK,Subtask1,NEW,one,2 hours,02.05.2022 13:30,02.05.2022 15:30,1
+3,SUBTASK,Subtask2,NEW,two,1 day,02.05.2022 15:30,03.05.2022 15:30,1
+4,SUBTASK,Subtask3,NEW,three,1 hour 30 minutes,03.05.2022 15:30,03.05.2022 17:00,1
+5,EPIC,Epic2,DONE,has 2 subtasks,3 hours,not set,not set
+6,SUBTASK,Subtask4,DONE,four,3 hours,not set,not set,5
+8,TASK,Task1,NEW,just task1,2 hours,03.05.2022 17:30,03.05.2022 19:30
+9,TASK,Task2,NEW,just task2,not set,not set,not set
+10,TASK,Task3,NEW,just task3,not set,not set,not set
+
+6,5,4,9,1,3

@@ -26,9 +26,9 @@ class HistoryManagerTest {
         taskManager = new InMemoryTaskManager();
         historyManager = taskManager.getInMemoryHistoryManager();
         epic = new Epic("EpicTest", "for testing");
-        subtask1 = new Subtask("sub1", "one", epic);
-        subtask2 = new Subtask("sub2", "two", epic);
-        subtask3 = new Subtask("sub3", "three", epic);
+        subtask1 = new Subtask("sub1", "one", epic.getId());
+        subtask2 = new Subtask("sub2", "two", epic.getId());
+        subtask3 = new Subtask("sub3", "three", epic.getId());
         task = new Task("Task", "oneTask");
         taskManager.addTask(epic);
         taskManager.addTask(subtask1);
