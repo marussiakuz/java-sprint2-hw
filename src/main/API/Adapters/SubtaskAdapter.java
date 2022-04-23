@@ -3,9 +3,7 @@ package API.Adapters;
 import Enums.StatusOfTask;
 import Enums.TypeOfTask;
 import Managers.TaskManager.FileBackedTaskManager;
-import Tasks.Epic;
 import Tasks.Subtask;
-import Tasks.Task;
 import com.google.gson.TypeAdapter;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
@@ -37,7 +35,7 @@ public class SubtaskAdapter extends TypeAdapter<Subtask> {    // Адаптер 
         jsonWriter.name("start");
         jsonWriter.value(subtask.formatDate(subtask.getStartTime()));
         jsonWriter.name("epicId");
-        jsonWriter.value(subtask.getEpic().getId());
+        jsonWriter.value(subtask.getEpicId());
         jsonWriter.endObject();
     }
 
@@ -85,8 +83,6 @@ public class SubtaskAdapter extends TypeAdapter<Subtask> {    // Адаптер 
         if (duration != null) subtask.setDuration(duration);
         if (start != null) subtask.setStartTime(start);
         subtask.setStatus(status);
-        subtask.getEpic().updateStatus();
-        subtask.getEpic().updateDurationAndTime();
         return subtask;
     }
 }

@@ -1,6 +1,7 @@
 package Managers.TaskManager;
 
 import API.Adapters.*;
+
 import API.KVServer.KVTaskClient;
 import Tasks.*;
 import com.google.gson.*;
@@ -11,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
 
-public class HTTPTaskManager extends InMemoryTaskManager {    // Менеджер для взаимодействия с HTTP-запросами
+public class HTTPTaskManager extends FileBackedTaskManager {    // Менеджер для взаимодействия с HTTP-запросами
     private static KVTaskClient client;
     private static Gson gson;
 
@@ -41,6 +42,7 @@ public class HTTPTaskManager extends InMemoryTaskManager {    // Менедже�
         return client.getAPI_KEY();
     }
 
+    @Override
     public void save() {    // сохраняет состояние по ключу на сервер
         ArrayList<Task> tasks = getAllTasks();
         String jsonTasks = gson.toJson(tasks);
@@ -61,24 +63,17 @@ public class HTTPTaskManager extends InMemoryTaskManager {    // Менедже�
 
         for (JsonElement element : jsonListOfTasks) {
             Task task = HTTPTaskManager.fromElementToTask(element);
-            if (task instanceof Subtask) {
-                Subtask subtask = (Subtask) task;
-                subtask.getEpic().updateDurationAndTime();
-                subtask.getEpic().updateStatus();
-            }
+            if (isEpic(task)) task.setDurationAndStartTime(null, null);
             manager.addTask(task);
         }
 
         ArrayList<Integer> history = new ArrayList<>();
-
         for (JsonElement element : jsonListOfHistory) {
             JsonObject jsonObject = element.getAsJsonObject();
             int id = jsonObject.get("id").getAsInt();
             history.add(id);
         }
-
         Collections.reverse(history);
-
         for (Integer id : history) {
             manager.getTask(id);
         }
@@ -91,43 +86,10 @@ public class HTTPTaskManager extends InMemoryTaskManager {    // Менедже�
         String type = jsonObject.get("type").getAsString();
         Task task = null;
         switch (type) {
-            case "EPIC" -> {
-                task = gson.fromJson(element, Epic.class);
-            }
+            case "EPIC" -> task = gson.fromJson(element, Epic.class);
             case "SUBTASK" -> task = gson.fromJson(element, Subtask.class);
             default -> task = gson.fromJson(element, Task.class);
         }
         return task;
-    }
-
-    @Override
-    public void addTask(Task task) {
-        super.addTask(task);
-        save();
-    }
-
-    @Override
-    public void updateTask(Task taskNewVersion) {
-        super.updateTask(taskNewVersion);
-        save();
-    }
-
-    @Override
-    public void deleteAllTasks() {
-        super.deleteAllTasks();
-        save();
-    }
-
-    @Override
-    public Task getTask(int id) {
-        Task task = super.getTask(id);
-        save();
-        return task;
-    }
-
-    @Override
-    public void deleteOneTask(int id) {
-        super.deleteOneTask(id);
-        save();
     }
 }

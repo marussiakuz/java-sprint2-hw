@@ -69,9 +69,20 @@ public class TimeIntersectionChecker {    // Класс для проверки 
         start = LocalDateTime.of(start.toLocalDate(), time);
         return start;
     }
-
+    // создать новую не заполненную временную сетку
     public TimeIntersectionChecker updateTimeIntersectionChecker (){
         periodChecker.clear();
         return new TimeIntersectionChecker();
+    }
+    // очистить ранее заполненный период
+    public void clearPeriod(Duration duration, LocalDateTime dateTime) {
+        LocalDateTime start = periodChecker.floorKey(dateTime);
+        LocalDateTime finish = periodChecker.floorKey(dateTime.plus(duration));
+        if (dateTime.isEqual(start)) finish = finish.minus(Duration.ofMinutes(minutes));
+        LocalDateTime current = start;
+        while (!current.isAfter(finish)) {
+            periodChecker.put(current, true);
+            current = current.plusMinutes(minutes);
+        }
     }
 }

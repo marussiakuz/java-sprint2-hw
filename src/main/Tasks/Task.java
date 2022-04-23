@@ -1,13 +1,6 @@
 package Tasks;
 
 import Enums.*;
-import Exceptions.TimeIntersectionException;
-import Managers.TaskManager.FileBackedTaskManager;
-import Managers.TaskManager.InMemoryTaskManager;
-import Managers.TaskManager.TaskManager;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,15 +14,12 @@ public class Task implements Comparable<Task> {    // родительский �
     private StatusOfTask status;
     private Duration duration;
     private LocalDateTime startTime;
-    private transient static TimeIntersectionChecker intersectionChecker = new TimeIntersectionChecker();
-    private transient static InMemoryTaskManager manager = new InMemoryTaskManager();
 
     public Task(String name, String description) {    // конструктор экземпляра класса Задача
         this.name = name;
         this.description = description;
         this.status = StatusOfTask.NEW;
         id = ++count;
-        manager.addTask(this);
     }
 
     public Task(String name, String description, Duration duration, LocalDateTime startTime) {    // конструктор экземпляра класса Задача
@@ -38,7 +28,6 @@ public class Task implements Comparable<Task> {    // родительский �
         this.status = StatusOfTask.NEW;
         setDurationAndStartTime(duration, startTime);
         id = ++count;
-        manager.addTask(this);
     }
 
     public Task(int id, String name, String description) {    // конструктор экземпляра класса Задача
@@ -46,7 +35,6 @@ public class Task implements Comparable<Task> {    // родительский �
         this.name = name;
         this.description = description;
         this.status = StatusOfTask.NEW;
-        manager.addTask(this);
     }
 
     public int getId() {    // получить id номер задачи
@@ -54,9 +42,7 @@ public class Task implements Comparable<Task> {    // родительский �
     }
 
     public void setId(int id) {    // установить id номер
-        manager.getListOfAllTasks().remove(id);
         this.id = id;
-        manager.getListOfAllTasks().put(id, this);
     }
 
     public Duration getDuration() {
@@ -73,11 +59,7 @@ public class Task implements Comparable<Task> {    // родительский �
 
     public void setDurationAndStartTime (Duration duration, LocalDateTime startTime) {
         this.duration = duration;
-        if (startTime == null) return;
-        if (intersectionChecker.checkTimeAvailability(duration, startTime)) this.startTime = startTime;
-        else throw new TimeIntersectionException(String.format("The selected time is not available, " +
-            "the nearest available time is %s", formatDate(intersectionChecker.getAvailableDateTime(duration,
-            startTime))));
+        this.startTime = startTime;
     }
 
     public LocalDateTime getStartTime() {
@@ -109,10 +91,6 @@ public class Task implements Comparable<Task> {    // родительский �
         return TypeOfTask.TASK;
     }
 
-    public static InMemoryTaskManager getManager() {
-        return manager;
-    }
-
     public String formatDuration() {
         if (duration == null) return "not set";
         int days = (int) duration.toDays();
@@ -131,14 +109,10 @@ public class Task implements Comparable<Task> {    // родительский �
         return result.toString().trim();
     }
 
-    public String formatDate(LocalDateTime dateTime) {
+    public static String formatDate(LocalDateTime dateTime) {
         if (dateTime == null) return "not set";
         final DateTimeFormatter formatOfDate = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm");
         return dateTime.format(formatOfDate);
-    }
-
-    public static void clearIntersectionChecker() {
-        intersectionChecker = intersectionChecker.updateTimeIntersectionChecker();
     }
 
     @Override

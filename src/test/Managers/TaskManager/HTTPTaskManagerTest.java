@@ -17,6 +17,7 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.Month;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,6 +30,9 @@ public class HTTPTaskManagerTest {
     private static Gson gson;
     private static Epic epic1;
     private static Subtask subtask1;
+    private static Subtask subtask2;
+    private static Subtask subtask3;
+    private static Task task1;
 
     @BeforeAll
     public static void prepareForTesting() throws IOException {
@@ -47,28 +51,36 @@ public class HTTPTaskManagerTest {
     }
 
     @BeforeEach
-    public void beforeEach() {
-        if (isTasksListAlreadyDeleted()) fillTheManager(manager);
+    public void beforeEach() throws IOException {
+       if (hasBeenTasksListAlreadyDeleted()) fillTheManager(manager);
     }
 
-    // проверка получения истории просмотра
-    @Test
+    @AfterEach
+    public void afterEach() {
+        manager.deleteAllTasks();
+    }
+
+    @Test    // проверка получения истории просмотра
     void history() throws IOException, InterruptedException {
         URI url = URI.create("http://localhost:8080/tasks/history");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(response.body(), gson.toJson(manager.history()));
+        assertEquals(gson.toJson(manager.history()), response.body());
+
+        manager.deleteAllTasks();
+        response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals("The history is empty", response.body());
     }
 
-    // проверка получения задач по дате начала
-    @Test
+    @Test    // проверка получения задач по дате начала
     void getPrioritizedTasks() throws IOException, InterruptedException {
         URI url = URI.create("http://localhost:8080/tasks");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(response.body(), gson.toJson(manager.getPrioritizedTasks()),"возвращенный список " +
+        assertEquals(gson.toJson(manager.getPrioritizedTasks()), response.body(),"возвращенный список " +
                 "не соответствует хранимому в памяти");
 
         manager.deleteAllTasks();
@@ -77,8 +89,7 @@ public class HTTPTaskManagerTest {
         assertEquals("The task list is empty", response.body());
     }
 
-    // проверка получения всех задач
-    @Test
+    @Test    // проверка получения всех задач
     void getAllTasks() throws IOException, InterruptedException {
         URI url = URI.create("http://localhost:8080/tasks/task/");
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
@@ -93,14 +104,21 @@ public class HTTPTaskManagerTest {
         assertEquals("The task list is empty", response.body());
     }
 
-    // проверка получения всех подзадач определенного эпика
-    @Test
+    @Test    // проверка получения всех подзадач определенного эпика
     void getSubtasksOfTheEpic() throws IOException, InterruptedException {
         URI url = URI.create(String.format("http://localhost:8080/tasks/subtask/epic/?id=%s", epic1.getId()));
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(response.body(), gson.toJson(epic1.getListOfSubtasks()), "не совпадает с подзадачами эпика");
+        assertEquals(gson.toJson(epic1.getListOfSubtasks()), response.body(), "не совпадает с подзадачами " +
+                "эпика");
+
+        manager.deleteOneTask(subtask1.getId());
+        manager.deleteOneTask(subtask2.getId());
+        manager.deleteOneTask(subtask3.getId());
+        response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals(String.format("Epic id=%s doesn't have any subtasks", epic1.getId()), response.body());
 
         URI newUrl = URI.create("http://localhost:8080/tasks/subtask/epic/?id=99");
         request = HttpRequest.newBuilder().uri(newUrl).GET().build();
@@ -109,12 +127,13 @@ public class HTTPTaskManagerTest {
         assertEquals("The epic with id=99 has not been found", response.body());
     }
 
-    // проверка добавления новой задачи
-    @Test
+    @Test    // проверка добавления новой задачи
     void addTask() throws IOException, InterruptedException {
-        LocalDateTime date = LocalDateTime.of(2022, Month.MAY, 1, 8, 0);
-        Duration duration = Duration.ofHours(5);
-        Subtask newSubtask = new Subtask("Added Subtask", "fourth", epic1.getId(), duration, date);
+        Duration oldDurationOfTheEpic = epic1.getDuration();
+        LocalDateTime dateOfNewSubtask = LocalDateTime.of(2022, Month.MAY, 1, 8, 0);
+        Duration durationOfNewSubtask = Duration.ofHours(5);
+        Subtask newSubtask = new Subtask("Added Subtask", "fourth", epic1.getId(), durationOfNewSubtask,
+                dateOfNewSubtask);
 
         URI url = URI.create("http://localhost:8080/tasks/subtask/");
         String json = gson.toJson(newSubtask);
@@ -124,11 +143,25 @@ public class HTTPTaskManagerTest {
 
         assertEquals("the subtask has been successfully added", response.body());
         assertTrue(manager.getAllTasks().contains(newSubtask), "задача не добавилась");
-        assertEquals(epic1.getStartTime(), date, "данные эпика не обновились");
+        assertTrue(epic1.getListOfSubtasks().contains(newSubtask), "подзадача не добавилась в список "
+                + "подзадач эпика");
+        assertEquals(epic1.getStartTime(), dateOfNewSubtask, "дата старта эпика не обновилась");
+        assertEquals(oldDurationOfTheEpic.plus(durationOfNewSubtask), epic1.getDuration(), "длительность эпика "
+                + "не обновилась");
+
+        json = "{\"name\":\"subtaskWithNotExistingEpic\",\"description\":\"none\",\"epicId\":99}";
+        final HttpRequest.BodyPublisher secondBody = HttpRequest.BodyPublishers.ofString(json);
+        request = HttpRequest.newBuilder().uri(url).POST(secondBody).build();
+        response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        String allExistingEpics = manager.getAllTasks().stream().filter(task -> InMemoryTaskManager.isEpic(task))
+                .map(task -> task.getId()).map(String::valueOf).collect(Collectors.joining(","));
+
+        assertEquals(String.format("Epic with id=99 does not exist. Choose existing epics with the following id: %s "
+                + "or create a new Epic with id=99 first", allExistingEpics), response.body());
     }
 
-    // проверка обновления уже существующей задачи
-    @Test
+    @Test    // проверка обновления уже существующей задачи
     void updateTask() throws IOException, InterruptedException {
         subtask1.setStatus(StatusOfTask.IN_PROGRESS);
         String json = gson.toJson(subtask1);
@@ -138,11 +171,10 @@ public class HTTPTaskManagerTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
         assertEquals("the subtask has been successfully updated", response.body());
-        assertEquals(epic1.getStatus(), StatusOfTask.IN_PROGRESS, "данные эпика не обновились");
+        assertEquals(StatusOfTask.IN_PROGRESS, epic1.getStatus(), "данные эпика не обновились");
     }
 
-    // проверка удаления всех задач
-    @Test
+    @Test    // проверка удаления всех задач
     void deleteAllTasks() throws IOException, InterruptedException {
         URI url = URI.create("http://localhost:8080/tasks");
         HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
@@ -152,14 +184,13 @@ public class HTTPTaskManagerTest {
         assertTrue(manager.getAllTasks().isEmpty(), "задачи не удалились");
     }
 
-    // проверка получения задачи по id
-    @Test
+    @Test    // проверка получения задачи по id
     void getTask() throws IOException, InterruptedException {
         URI url = URI.create(String.format("http://localhost:8080/tasks/task/?id=%s", epic1.getId()));
         HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals(response.body(), gson.toJson(epic1), "не получили запрашиваемую задачу");
+        assertEquals(gson.toJson(epic1), response.body(), "не получили запрашиваемую задачу");
 
         url = URI.create("http://localhost:8080/tasks/task/?id=99");
         request = HttpRequest.newBuilder().uri(url).GET().build();
@@ -168,17 +199,31 @@ public class HTTPTaskManagerTest {
         assertEquals("The task with id=99 has not been found", response.body());
     }
 
-    // проверка удаления одной задачи
-    @Test
+    @Test    // проверка удаления одной задачи
     void deleteOneTask() throws IOException, InterruptedException {
-        URI url = URI.create("http://localhost:8080/tasks/task/?id=5");
+        subtask1.setStatus(StatusOfTask.IN_PROGRESS);
+        manager.updateTask(subtask1);
+        assertEquals(StatusOfTask.IN_PROGRESS ,epic1.getStatus());
+
+        URI url = URI.create(String.format("http://localhost:8080/tasks/task/?id=%s", subtask1.getId()));
         HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-        assertEquals("the epic with id=5 has been successfully deleted, "
-                + "all its subtasks with id 6,7 have also been deleted", response.body());
-        assertFalse(manager.getListOfAllTasks().containsKey(6),"подзадача не была удалена вместе с эпиком");
-        assertFalse(manager.getListOfAllTasks().containsKey(7),"подзадача не была удалена вместе с эпиком");
+        assertEquals(String.format("the task with id=%s has been successfully deleted", subtask1.getId()),
+                response.body());
+        assertFalse(manager.getAllTasks().contains(subtask1), "задача не была удалена из списка менеджера");
+        assertEquals(StatusOfTask.NEW, epic1.getStatus(), "после удаления подзадачи статус эпика не изменился");
+        assertFalse(epic1.getListOfSubtasks().contains(subtask1), "задача не была удалена из списка подзадач "
+                + "эпика");
+
+        url = URI.create(String.format("http://localhost:8080/tasks/task/?id=%s", epic1.getId()));
+        request = HttpRequest.newBuilder().uri(url).DELETE().build();
+        response = client.send(request, HttpResponse.BodyHandlers.ofString());
+
+        assertEquals("the epic with id=1 has been successfully deleted, "
+                + "all its subtasks with id 3,4 have also been deleted", response.body());
+        assertFalse(manager.getListOfAllTasks().containsKey(3),"подзадача 3 не была удалена вместе с эпиком");
+        assertFalse(manager.getListOfAllTasks().containsKey(4),"подзадача 4 не была удалена вместе с эпиком");
 
         url = URI.create("http://localhost:8080/tasks/task/?id=101");
         request = HttpRequest.newBuilder().uri(url).DELETE().build();
@@ -203,14 +248,14 @@ public class HTTPTaskManagerTest {
 
         epic1 = new Epic("Epic1", "has 3 subtasks");
         subtask1 = new Subtask("Subtask1", "one", epic1.getId(), duration1, date1);
-        Subtask subtask2 = new Subtask("Subtask2", "two", epic1.getId(), duration2, date2);
-        Subtask subtask3 = new Subtask("Subtask3", "three", epic1.getId(), duration3, date3);
+        subtask2 = new Subtask("Subtask2", "two", epic1.getId(), duration2, date2);
+        subtask3 = new Subtask("Subtask3", "three", epic1.getId(), duration3, date3);
 
         Epic epic2 = new Epic("Epic2", "has 2 subtasks");
         Subtask subtask4 = new Subtask("Subtask4", "four", epic2.getId(), duration5, null);
         Subtask subtask5 = new Subtask("Subtask5", "five", epic2.getId(), duration4, date4);
 
-        Task task1 = new Task("Task1", "just task1", duration1, date5);
+        task1 = new Task("Task1", "just task1", duration1, date5);
         Task task2 = new Task("Task2", "just task2");
         Task task3 = new Task("Task3", "just task3");
 
@@ -224,10 +269,20 @@ public class HTTPTaskManagerTest {
         manager.addTask(task1);
         manager.addTask(task2);
         manager.addTask(task3);
+
+        manager.getTask(epic1.getId());    // создаем историю просмотра задач по их id
+        manager.getTask(subtask2.getId());
+        manager.getTask(task2.getId());
+        manager.getTask(subtask3.getId());
+        manager.getTask(epic2.getId());
+        manager.getTask(subtask4.getId());
+        manager.getTask(subtask3.getId());
+        manager.getTask(subtask5.getId());
+        manager.getTask(epic1.getId());
     }
 
     // вспомогательный метод для проверки были ли удалены уже все задачи в процессе тестирования
-    private boolean isTasksListAlreadyDeleted (){
+    private boolean hasBeenTasksListAlreadyDeleted (){
         return manager.getAllTasks().isEmpty();
     }
 }

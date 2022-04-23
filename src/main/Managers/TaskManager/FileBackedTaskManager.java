@@ -11,7 +11,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -20,10 +19,10 @@ import java.util.stream.Stream;
 public class FileBackedTaskManager extends InMemoryTaskManager {    // Менеджер с автосохранением
     private String fileTasksInfo;
 
-    public FileBackedTaskManager () {
+    public FileBackedTaskManager() {
     }
 
-    public FileBackedTaskManager (String fileTasksInfo) {    // конструктор со строковым обозначением файла
+    public FileBackedTaskManager(String fileTasksInfo) {    // конструктор со строковым обозначением файла
         this.fileTasksInfo = fileTasksInfo;
     }
 
@@ -45,7 +44,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {    // Мене�
             task.getName(), task.getStatus().toString(), task.getDescription(), task.formatDuration(),
             task.formatDate(task.getStartTime()), task.formatDate(task.getEndTime())).collect(Collectors.toList()));
         if (isSubtask(task)) {
-            taskInfo = new StringBuilder(taskInfo).append("," + (((Subtask) task).getEpic().getId())).toString();
+            taskInfo = new StringBuilder(taskInfo).append("," + (((Subtask) task).getEpicId())).toString();
         }
         return taskInfo;
     }
@@ -198,68 +197,5 @@ public class FileBackedTaskManager extends InMemoryTaskManager {    // Мене�
         } catch (ManagerSaveException e) {
             e.printStackTrace();
         }
-    }
-
-    public static void main(String[] args) {    // Тестирование функции автосохранения (5-й спринт)
-
-        FileBackedTaskManager managerFirst = new FileBackedTaskManager("saved2.csv");
-
-        LocalDateTime date1 = LocalDateTime.of(2022, Month.MAY, 2, 13, 30);
-        LocalDateTime date2 = LocalDateTime.of(2022,Month.MAY, 2, 15, 30);
-        LocalDateTime date3 = LocalDateTime.of(2022,Month.MAY, 3, 15, 30);
-        LocalDateTime date4 = LocalDateTime.of(2022,Month.MAY, 1, 17, 30);
-        LocalDateTime date5 = LocalDateTime.of(2022,Month.MAY, 3, 17, 30);
-
-        Duration duration1 = Duration.ofHours(2);
-        Duration duration2 = Duration.ofDays(1);
-        Duration duration3 = Duration.ofMinutes(90);
-        Duration duration4 = Duration.ofHours(3);
-        Duration duration5 = Duration.ofMinutes(180);
-
-        Epic epic1 = new Epic("Epic1", "has 3 subtasks");
-        Subtask subtask1 = new Subtask("Subtask1", "one", epic1.getId(), duration1, date1);
-        Subtask subtask2 = new Subtask("Subtask2", "two", epic1.getId(), duration2, date2);
-        Subtask subtask3 = new Subtask("Subtask3", "three", epic1.getId(), duration3, date3);
-
-        Epic epic2 = new Epic("Epic2", "has 2 subtasks");
-        Subtask subtask4 = new Subtask("Subtask4", "four", epic2.getId(), duration5, null);
-        Subtask subtask5 = new Subtask("Subtask5", "five", epic2.getId(), duration4, date4);
-
-        Task task1 = new Task("Task1", "just task1", duration1, date5);
-        Task task2 = new Task("Task2", "just task2");
-        Task task3 = new Task("Task3", "just task3");
-
-        managerFirst.addTask(epic1);    // добавляем задачи в Менеджер с функцией автосохранения
-        managerFirst.addTask(subtask1);
-        managerFirst.addTask(subtask2);
-        managerFirst.addTask(subtask3);
-        managerFirst.addTask(epic2);
-        managerFirst.addTask(subtask4);
-        managerFirst.addTask(subtask5);
-        managerFirst.addTask(task1);
-        managerFirst.addTask(task2);
-        managerFirst.addTask(task3);
-
-        managerFirst.getTask(1);    // создаем историю просмотра задач по их id
-        managerFirst.getTask(4);
-        managerFirst.getTask(3);
-        managerFirst.getTask(1);
-        managerFirst.getTask(9);
-        managerFirst.getTask(4);
-        managerFirst.getTask(5);
-        managerFirst.getTask(6);
-        managerFirst.getTask(7);
-
-        subtask4.setStatus(StatusOfTask.DONE);
-        managerFirst.updateTask(subtask4);    // поменяли статус подзадачи c id 6 (относится к epic2)
-        managerFirst.deleteOneTask(subtask5.getId());    // удалили подзадачу с id 7 (относится к epic2)
-
-        // воссоздаем ранее сохраненный экземпляр класса FileBackedTaskManager из того же файла
-        FileBackedTaskManager managerSecond = FileBackedTaskManager.loadFromFile("saved2.csv");
-
-        // сравнение сохраненного и восстановленного списка задач
-        System.out.println(managerFirst.getAllTasks().equals(managerSecond.getAllTasks()));
-        // сравнение сохраненной и восстановленной истории задач
-        System.out.println(managerFirst.history().equals(managerSecond.history()));
     }
 }

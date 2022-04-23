@@ -6,7 +6,6 @@ import Exceptions.TaskNotFoundException;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +34,8 @@ public class Epic extends Task {    // наследственный класс �
 
     public void deleteSubtask(Subtask subtask) {    // удалить подзадачу из колекции эпика
         if (!getListOfSubtasks().contains(subtask))
-            throw new TaskNotFoundException(String.format("The subtask belongs to another epic. " +
-                    "Call the method from an epic %s", subtask.getEpic().getName()));
+            throw new TaskNotFoundException(String.format("The subtask belongs to another epic. Call the method from "
+                    + "an epic id=%s", subtask.getEpicId()));
         listOfSubtasks.remove(subtask.getId());
         updateStatus();
         updateDurationAndTime();

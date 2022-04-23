@@ -72,6 +72,9 @@ public class Main {    // тестирование проекта на этап�
 
         System.out.println(manager.getAllTasks().equals(loadedManager.getAllTasks()));
         System.out.println(manager.history().equals(loadedManager.history()));
+
+        kvserver.stop();
+        server.stop();
     }
 }
 
